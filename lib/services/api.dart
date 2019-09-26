@@ -11,14 +11,16 @@ class PropertyApi {
   static property _forMap(Map<String, dynamic> map) {
     return new property(
       externalId: map['id'],
-      name: map['name'],
+      pname: map['pname'],
       description: map['description'],
       avatarUrl: map['image_url'],
       location: map['location'],
-      likeCounter: map['like_counter'],
-      isAdopted: map['adopted'],
+      preturn: map['preturn'],
+      mvalue: map['mvlaue'],
+      ovalue: map['ovalue'],
+      isCompleted: map['completed'],
       pictures: new List<String>.from(map['pictures']),
-      cattributes: new List<String>.from(map['cattributes']),
+      pattributes: new List<String>.from(map['pattributes']),
     );
   }
 }

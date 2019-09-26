@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "105270931778",
+    "firebase_url": "https://ric-ventures-b8fec.firebaseio.com",
+    "project_id": "ric-ventures-b8fec",
+    "storage_bucket": "ric-ventures-b8fec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105270931778:android:2a830683959a69376cd8db",
+        "android_client_info": {
+          "package_name": "com.realtyinvestorclub.ricinvestors"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "105270931778-38phbk47mq4aa0cmokqjjj86s44vah4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.realtyinvestorclub.ricinvestors",
+            "certificate_hash": "8d5adebc836e5ecc65530f7a3aecae5e812c6828"
+          }
+        },
+        {
+          "client_id": "105270931778-q3iv4g1l5rs47j34f8g43sbca29hg5lo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM-zJxRqlQ4A5wOr-Vh3rbQx0T0ZYg8gQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "105270931778-q3iv4g1l5rs47j34f8g43sbca29hg5lo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

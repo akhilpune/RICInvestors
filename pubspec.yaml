@@ -13,6 +13,18 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_screenutil: ^0.4.2
+
+
+
+  firebase_auth: ^0.14.0+1
+  google_sign_in: ^4.0.6
+
+  provider: ^3.0.0+1
+  cloud_firestore: ^0.12.9
+
+
+
 
   font_awesome_flutter: "8.5.0"
 
@@ -35,8 +47,45 @@ flutter:
        - asset: fonts/Ubuntu-Regular.ttf
        - asset: fonts/Ubuntu-Bold.ttf
 
+   - family: SF-Pro-Text-Regular
+     fonts:
+        - asset: fonts/SF-Pro-Text-Regular.otf
+
+   - family: SF-Pro-Text-Bold
+     fonts:
+        - asset: fonts/SF-Pro-Text-Bold.otf
+
+   - family: Calibre-Semibold
+     fonts:
+           - asset: fonts/Calibre Semibold.otf
+
+   - family: CustomIcons
+     fonts:
+           - asset: fonts/custom_icons.ttf
+
+   - family: CustomIcons1
+     fonts:
+           - asset: fonts/CustomIcons.ttf
+
+   - family: Poppins-Bold
+     fonts:
+           - asset: fonts/Poppins-Bold.ttf
+
+   - family: Poppins-Medium
+     fonts:
+           - asset: fonts/Poppins-Medium.ttf
+
+
+
+
  assets:
    - assets/properties.json
    - images/profile_header_background.png
-
+   - assets/image_01.png
+   - assets/image_02.jpg
+   - assets/image_03.jpg
+   - assets/image_04.jpg
+   - assets/image01.png
+   - assets/image02.png
+   - assets/logo.png
 

@@ -47,7 +47,7 @@ class CatDetailBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         new Text(
-          cat.name,
+          cat.pname,
           style: textTheme.headline.copyWith(color: Colors.white),
         ),
         new Padding(

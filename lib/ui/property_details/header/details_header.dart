@@ -56,7 +56,7 @@ class _CatDetailHeaderState extends State<CatDetailHeader> {
           new Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: new Text(
-                widget.cat.likeCounter.toString(),
+                widget.cat.preturn.toString(),
                 style: textTheme.subhead.copyWith(color: Colors.white),
               )
           )

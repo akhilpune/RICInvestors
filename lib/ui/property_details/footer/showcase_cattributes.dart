@@ -48,12 +48,12 @@ class CattributesShowcase extends StatelessWidget {
   Widget build(BuildContext context) {
     var items = <Widget>[];
 
-    for (var i = 0; i < cat.cattributes.length; i++) {
+    for (var i = 0; i < cat.pattributes.length; i++) {
       var badge = _createCircleBadge(
-        cattributeLookup[cat.cattributes[i]]['icon'],
+        cattributeLookup[cat.pattributes[i]]['icon'],
         Colors.white12,
         Colors.white,
-        cattributeLookup[cat.cattributes[i]]['name'],
+        cattributeLookup[cat.pattributes[i]]['name'],
       );
 
       items.add(badge);
