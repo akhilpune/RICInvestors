@@ -9,4 +9,5 @@ class CustomIcons {
   static const IconData linkedin = IconData(0xe903, fontFamily: "CustomIcons1");
 
 
+
 }

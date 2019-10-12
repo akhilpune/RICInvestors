@@ -2,7 +2,7 @@ import 'package:ricinvestors/models/property.dart';
 import 'package:flutter/material.dart';
 
 class DetailsShowcase extends StatelessWidget {
-  final property cat;
+  final Property cat;
 
   DetailsShowcase(this.cat);
 

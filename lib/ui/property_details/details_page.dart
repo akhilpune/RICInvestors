@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class CatDetailsPage extends StatefulWidget {
-  final property cat;
+  final Property cat;
   final Object avatarTag;
 
   CatDetailsPage(

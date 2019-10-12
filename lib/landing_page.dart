@@ -33,11 +33,10 @@ import 'package:ricinvestors/services/auth.dart';
 //    });
 //  }
 //
-
 class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthBase>(context, listen: false);
+    final auth = Provider.of<AuthBase>(context);
     return StreamBuilder<User>(
         stream: auth.onAuthStateChanged,
         builder: (context, snapshot) {
@@ -46,13 +45,7 @@ class LandingPage extends StatelessWidget {
             if (user == null) {
               return SignInPage.create(context);
             }
-            return Provider<User>.value(
-              value: user,
-              child: Provider<Database>(
-                builder: (_) => FirestoreDatabase(uid: user.uid),
-                child: PropertyList(),
-              ),
-            );
+            return PropertyList();
           } else {
             return Scaffold(
               body: Center(

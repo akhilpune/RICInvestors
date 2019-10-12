@@ -5,7 +5,7 @@ import 'package:ricinvestors/ui/property_details/footer/showcase_pictures.dart';
 import 'package:flutter/material.dart';
 
 class CatShowcase extends StatefulWidget {
-  final property cat;
+  final Property cat;
 
   CatShowcase(this.cat);
 

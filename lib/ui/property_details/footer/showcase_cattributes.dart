@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 final dynamic cattributeLookup = {
-  "children": {"name": "Kid Friendly", "icon": FontAwesomeIcons.child},
-  "desexed": {"name": "Desexed", "icon": FontAwesomeIcons.cut},
-  "vaccinated": {"name": "Vaccinated", "icon": FontAwesomeIcons.eyeDropper},
-  "microchipped": {"name": "Microchipped", "icon": FontAwesomeIcons.microchip},
+  "pattributes1": {"name": "Time Period", "icon": FontAwesomeIcons.clock},
+  "pattributes2": {"name": "Multiple", "icon": FontAwesomeIcons.times},
+  "pattributes3": {"name": "Investors", "icon": FontAwesomeIcons.users},
+
 };
 
 class CattributesShowcase extends StatelessWidget {
-  final property cat;
+  final Property cat;
 
   CattributesShowcase(this.cat);
 
@@ -46,18 +46,40 @@ class CattributesShowcase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var items = <Widget>[];
-
-    for (var i = 0; i < cat.pattributes.length; i++) {
-      var badge = _createCircleBadge(
-        cattributeLookup[cat.pattributes[i]]['icon'],
+    var items = <Widget>[
+    _createCircleBadge(
+        cattributeLookup["pattributes1"]['icon'],
         Colors.white12,
         Colors.white,
-        cattributeLookup[cat.pattributes[i]]['name'],
-      );
+        cat.pattributes1.toString(),
+      ),
+    _createCircleBadge(
+    cattributeLookup["pattributes2"]['icon'],
+    Colors.white12,
+    Colors.white,
+    cat.pattributes2.toString()
+    ),
+      _createCircleBadge(
+        cattributeLookup["pattributes3"]['icon'],
+        Colors.white12,
+        Colors.white,
+        cat.pattributes3.toString(),
+      ),
+      Text(cat.pattributes4.toString()),
+      Text(cat.pattributes5.toString()),
 
-      items.add(badge);
-    }
+    ];
+
+//    for (var i = 0; i < cat.pattributes.length; i++) {
+//      var badge = _createCircleBadge(
+//        cattributeLookup[cat.pattributes[i]]['icon'],
+//        Colors.white12,
+//        Colors.white,
+//        cattributeLookup[cat.pattributes[i]]['name'],
+//      );
+//
+//      items.add(badge);
+//    }
 
     var delegate = new SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 4,

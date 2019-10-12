@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class CatDetailHeader extends StatefulWidget {
-  final property cat;
+  final Property cat;
   final Object avatarTag;
 
   CatDetailHeader(
@@ -56,7 +56,7 @@ class _CatDetailHeaderState extends State<CatDetailHeader> {
           new Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: new Text(
-                widget.cat.preturn.toString(),
+                widget.cat.yeild.toString(),
                 style: textTheme.subhead.copyWith(color: Colors.white),
               )
           )

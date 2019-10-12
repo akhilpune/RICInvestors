@@ -1,85 +1,118 @@
 import 'dart:async';
 
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:ricinvestors/CustomIcons.dart';
-import 'package:ricinvestors/Widgets/FormCard.dart';
 import 'package:ricinvestors/Widgets/SocialIcons.dart';
-import 'package:ricinvestors/Widgets/platform_exception_alert_dialog.dart';
+import 'package:ricinvestors/Widgets/loading.dart';
+import 'package:ricinvestors/landing_page.dart';
+import 'package:ricinvestors/main.dart';
 import 'package:ricinvestors/services/auth.dart';
-import 'package:ricinvestors/ui/sign_in/sign_in_manager.dart';
-import 'package:ricinvestors/ui/sign_in/sign_up.dart';
+
+import 'package:ricinvestors/ui/sign_in/forgot_password.dart';
 
 
+import 'package:ricinvestors/ui/sign_in/signup_new.dart';
 
 
+import 'package:ricinvestors/utils/validator.dart';
 
 
+import 'email_sign_in_model.dart';
 
-class SignInPage extends StatelessWidget {
-  const SignInPage({
-    Key key,
-    @required this.manager,
-    @required this.isLoading,
-  }) : super(key: key);
-
-  final SignInManager manager;
-  final bool isLoading;
-
-
-
-  static const Key emailPasswordKey = Key('email-password');
+class SignInPage extends StatefulWidget {
+  SignInPage({@required this.model});
+  final EmailSignInChangeModel model;
 
   static Widget create(BuildContext context) {
-    final auth = Provider.of<AuthBase>(context);
-    return ChangeNotifierProvider<ValueNotifier<bool>>(
-      builder: (context) => ValueNotifier<bool>(false),
-      child: Consumer<ValueNotifier<bool>>(
-        builder: (context, valueNotifier, _) => Provider<SignInManager>(
-          builder: (context) =>
-              SignInManager(auth: auth, isLoading: valueNotifier),
-          child: Consumer<SignInManager>(
-            builder: (context, manager, _) => SignInPage(
-              manager: manager,
-              isLoading: valueNotifier.value,
-            ),
-          ),
-        ),
+    final AuthBase auth = Provider.of<AuthBase>(context);
+    return ChangeNotifierProvider<EmailSignInChangeModel>(
+      builder: (context) => EmailSignInChangeModel(auth: auth),
+      child: Consumer<EmailSignInChangeModel>(
+        builder: (context, model, _) =>
+            SignInPage(model: model),
       ),
     );
   }
 
-  void _showSignInError(BuildContext context, PlatformException exception) {
-    PlatformExceptionAlertDialog(
-      title: 'Sign in failed',
-      exception: exception,
-    ).show(context);
+
+
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _email = new TextEditingController();
+  final TextEditingController _password = new TextEditingController();
+
+  EmailSignInChangeModel get model => widget.model;
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
   }
 
-  Future<void> _signInWithGoogle(BuildContext context) async {
+
+  bool _autoValidate = false;
+  bool _loadingVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _submit() async {
+    if (_formKey.currentState.validate()) {
     try {
-      await manager.signInWithGoogle();
+      _changeLoadingVisible();
+      await model.submit();
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //       builder: (context) => LandingPage()),
+      // );
     } on PlatformException catch (e) {
-      if (e.code != 'ERROR_ABORTED_BY_USER') {
-        _showSignInError(context, e);
-      }
+      Flushbar(
+        title: "Sign In Failed",
+        message: e.toString(),
+        duration: Duration(seconds: 5),
+      )
+        ..show(context);
     }
   }
+}
+// void _emailLogin(
+//     {String email, String password, BuildContext context}) async {
+//   if (_formKey.currentState.validate()) {
+//     try {
+//       await model.submit();
+//       Navigator.of(context).pop();
+//     } catch (e) {
+//       print("Sign In Error: $e");
+//       String exception = AuthBase.getExceptionText(e);
+//       Flushbar(
+//         title: "Sign In Error",
+//         message: exception,
+//         duration: Duration(seconds: 5),
+//       )..show(context);
+//     }
+//   } else {
+//     setState(() => _autoValidate = true);
+//   }
+// }
 
 
-//  @override
-//  _SignInPageState createState() => new _SignInPageState();
-//}
-//class _SignInPageState extends State<SignInPage> {
-//  bool _isSelected = false;
-//
-//  void _radio() {
-//    setState(() {
-//      _isSelected = !_isSelected;
-//    });
-//  }
+
 
   Widget radioButton(bool isSelected) => Container(
         width: 16.0,
@@ -112,10 +145,19 @@ class SignInPage extends StatelessWidget {
     ScreenUtil.instance = ScreenUtil.getInstance()..init(context);
     ScreenUtil.instance =
         ScreenUtil(width: 750, height: 1334, allowFontScaling: true);
+
+
+
+
+
+
+
+
     return new Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: true,
-      body: Stack(
+      body:  Stack(
+
         fit: StackFit.expand,
         children: <Widget>[
           Column(
@@ -132,219 +174,287 @@ class SignInPage extends StatelessWidget {
             ],
           ),
           SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 60.0),
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Image.asset(
-                        "assets/logo.png",
-                        width: ScreenUtil.getInstance().setWidth(110),
-                        height: ScreenUtil.getInstance().setHeight(110),
-                      ),
-                      Text(" Investing \n Redefined",
-                          style: TextStyle(
-                              fontFamily: "Poppins-Bold",
-                              fontSize: ScreenUtil.getInstance().setSp(20),
-                              letterSpacing: .6,
-                              fontWeight: FontWeight.bold))
-                    ],
-                  ),
-                  SizedBox(
-                    height: ScreenUtil.getInstance().setHeight(180),
-                  ),
-                  //----------------------------------------------------------------------------------
-              new Container(
-                width: double.infinity,
-                height: ScreenUtil.getInstance().setHeight(500),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8.0),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black12,
-                          offset: Offset(0.0, 15.0),
-                          blurRadius: 15.0),
-                      BoxShadow(
-                          color: Colors.black12,
-                          offset: Offset(0.0, -10.0),
-                          blurRadius: 10.0),
-                    ]),
-                child: Padding(
-                  padding:
-                  EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("Login",
-                          style: TextStyle(
-                              fontSize: ScreenUtil.getInstance().setSp(45),
-                              fontFamily: "Poppins-Bold",
-                              letterSpacing: .6)),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().setHeight(30),
-                      ),
-                      Text("Username",
-                          style: TextStyle(
-                              fontFamily: "Poppins-Medium",
-                              fontSize:
-                              ScreenUtil.getInstance().setSp(26))),
-                      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                      TextField(
-                        decoration: InputDecoration(
-                            hintText: "username",
-                            hintStyle: TextStyle(
-                                color: Colors.grey, fontSize: 12.0)),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().setHeight(30),
-                      ),
-                      Text("PassWord",
-                          style: TextStyle(
-                              fontFamily: "Poppins-Medium",
-                              fontSize:
-                              ScreenUtil.getInstance().setSp(26))),
-                      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                      TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                            hintText: "Password",
-                            hintStyle: TextStyle(
-                                color: Colors.grey, fontSize: 12.0)),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil.getInstance().setHeight(35),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          InkWell(
-                            onTap: () {},
-                            child: Text("Forgot Password?",
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize:
-                                    ScreenUtil.getInstance().setSp(28),
-                                    fontFamily: "Poppins-Medium")),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-                  //----------------------------------------------------------------------------------
-                  SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 12.0,
-                          ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
 
-                        ],
-                      ),
-                      InkWell(
-                        child: Container(
-                          width: ScreenUtil.getInstance().setWidth(330),
-                          height: ScreenUtil.getInstance().setHeight(100),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [
-                                Color(0xFF17ead9),
-                                Color(0xFF6078ea)
-                              ]),
-                              borderRadius: BorderRadius.circular(6.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Color(0xFF6078ea).withOpacity(.3),
-                                    offset: Offset(0.0, 8.0),
-                                    blurRadius: 8.0)
-                              ]),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {},
-                              child: Center(
-                                child: Text("SIGNIN",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Poppins-Bold",
-                                        fontSize: 18,
-                                        letterSpacing: 1.0)),
+
+              child: Form(
+                key: _formKey,
+                autovalidate: _autoValidate,
+              child: Padding(
+                padding: EdgeInsets.only(left: 28.0, right: 28.0, top: 60.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Image.asset(
+                          "assets/logo.png",
+                          width: ScreenUtil.getInstance().setWidth(110),
+                          height: ScreenUtil.getInstance().setHeight(110),
+                        ),
+                        Text(" Investing \n Redefined",
+                            style: TextStyle(
+                                fontFamily: "Poppins-Bold",
+                                fontSize: ScreenUtil.getInstance().setSp(20),
+                                letterSpacing: .6,
+                                fontWeight: FontWeight.bold))
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().setHeight(180),
+                    ),
+                    //**************************************************************************************************************************************
+
+                    LoadingScreen(
+                      child: new Container(
+                        width: double.infinity,
+                        //height: ScreenUtil.getInstance().setHeight(500),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  offset: Offset(0.0, 15.0),
+                                  blurRadius: 15.0),
+                              BoxShadow(
+                                  color: Colors.black12,
+                                  offset: Offset(0.0, -10.0),
+                                  blurRadius: 10.0),
+                            ]),
+                        child: Padding(
+                          padding:
+                              EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("Login",
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil.getInstance().setSp(45),
+                                      fontFamily: "Poppins-Bold",
+                                      letterSpacing: .6)),
+                              SizedBox(
+                                height: ScreenUtil.getInstance().setHeight(30),
                               ),
+                              Text("Username",
+                                  style: TextStyle(
+                                      fontFamily: "Poppins-Medium",
+                                      fontSize:
+                                          ScreenUtil.getInstance().setSp(26))),
+                              //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            autofocus: false,
+                            controller: _email,
+                            validator: Validator.validateEmail,
+                            decoration: InputDecoration(
+                                hintText: "username",
+                                hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                            onChanged: model.updateEmail,
+                            enabled: model.isLoading == false,
+                          ),
+                              SizedBox(
+                                height: ScreenUtil.getInstance().setHeight(30),
+                              ),
+                              Text("PassWord",
+                                  style: TextStyle(
+                                      fontFamily: "Poppins-Medium",
+                                      fontSize:
+                                          ScreenUtil.getInstance().setSp(26))),
+                              //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            TextFormField(
+                              keyboardType: TextInputType.visiblePassword,
+                              autofocus: false,
+                              obscureText: true,
+                              controller: _password,
+                              validator: Validator.validatePassword,
+                              decoration: InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                              onChanged: model.updatePassword,
+                              enabled: model.isLoading == false,
                             ),
+
+                            SizedBox(
+                                height: ScreenUtil.getInstance().setHeight(35),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  InkWell(
+                                    onTap: () {
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ForgotPasswordScreen()),
+                                      );
+                                    },
+                                    child: Text("Forgot Password?",
+                                        style: TextStyle(
+                                            color: Colors.blue,
+                                            fontSize:
+                                                ScreenUtil.getInstance().setSp(28),
+                                            fontFamily: "Poppins-Medium")),
+                                  )
+                                ],
+
+                              ),
+                            SizedBox(
+                            height: ScreenUtil.getInstance().setHeight(30)),
+                            ],
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: ScreenUtil.getInstance().setHeight(40),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      horizontalLine(),
-                      Text("Social Login",
-                          style: TextStyle(
-                              fontSize: 16.0, fontFamily: "Poppins-Medium")),
-                      horizontalLine()
-                    ],
-                  ),
-                  SizedBox(
-                    height: ScreenUtil.getInstance().setHeight(40),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SocialIcon(
-                        colors: [
-                          Color(0xFFff4f38),
-                          Color(0xFFff355d),
-                        ],
-                        iconData: CustomIcons.googlePlus,
-                        onPressed: isLoading ? null : () => _signInWithGoogle(context),
                       ),
-                      SocialIcon(
-                        colors: [
-                          Color(0xFF00c6fb),
-                          Color(0xFF005bea),
-                        ],
-                        iconData: CustomIcons.linkedin,
-                        onPressed: () {},
-                      ),
-                      Text(
-                        "   New User? ",
-                        style: TextStyle(fontFamily: "Poppins-Medium"),
-                      ),
-                      InkWell(
+
+
+                        inAsyncCall: _loadingVisible ),
+                    //----------------------------------------------------------------------------------
+                    SizedBox(height: ScreenUtil.getInstance().setHeight(40)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 50.0,
+                            ),
+                             SizedBox(
+                              width: 8.0,
+                            ),
+                            SizedBox(
+                              width: 8.0,
+                            ),
+
+
+                InkWell(
+                  child: Container(
+                    width: ScreenUtil.getInstance().setWidth(330),
+                    height: ScreenUtil.getInstance().setHeight(100),
+                    decoration: BoxDecoration(
+                        gradient:
+                        LinearGradient(colors: [Color(0xFF17ead9), Color(0xFF6078ea)]),
+                        borderRadius: BorderRadius.circular(6.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color(0xFF6078ea).withOpacity(.3),
+                              offset: Offset(0.0, 8.0),
+                              blurRadius: 8.0)
+                        ]),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUpPage()),
-                          );
+
+                          //_changeLoadingVisible();
+                          _submit();
+
                         },
-                        child: Text("SignUp",
-                            style: TextStyle(
-                                color: Color(0xFF5d74e3),
-                                fontSize: ScreenUtil.getInstance().setSp(30),
-                                fontFamily: "Poppins-Bold")),
+                        child: Center(
+
+                            child: setUpButtonChild(),
+
+                        ),
                       ),
-                    ],
+                    ),
                   ),
+                ),
+
                 ],
+                        ),
+                      ],
+                    ),
+
+                    //******************************************************************************************************************************************************
+                    SizedBox(
+                      height: ScreenUtil.getInstance().setHeight(40),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        horizontalLine(),
+                        Text("Social Login",
+                            style: TextStyle(
+                                fontSize: 16.0, fontFamily: "Poppins-Medium")),
+                        horizontalLine()
+                      ],
+                    ),
+                    SizedBox(
+                      height: ScreenUtil.getInstance().setHeight(40),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SocialIcon(
+                          colors: [
+                            Color(0xFFff4f38),
+                            Color(0xFFff355d),
+                          ],
+                          iconData: CustomIcons.googlePlus,
+                          onPressed: () {},
+                        ),
+                        SocialIcon(
+                          colors: [
+                            Color(0xFF00c6fb),
+                            Color(0xFF005bea),
+                          ],
+                          iconData: CustomIcons.linkedin,
+                          onPressed: () {},
+                        ),
+                        Text(
+                          "   New User? ",
+                          style: TextStyle(fontFamily: "Poppins-Medium"),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpScreen()),
+                            );
+                          },
+                          child: Text("SignUp",
+                              style: TextStyle(
+                                  color: Color(0xFF5d74e3),
+                                  fontSize: ScreenUtil.getInstance().setSp(30),
+                                  fontFamily: "Poppins-Bold")),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+              ),
+
           )
         ],
       ),
     );
   }
+
+  Future<void> _changeLoadingVisible() async {
+    setState(() {
+      _loadingVisible = !_loadingVisible;
+    });
+  }
+
+  Widget setUpButtonChild() {
+    if (_loadingVisible == false) {
+
+     return  Text("SIGNIN",
+          style: TextStyle(
+              color: Colors.white,
+              fontFamily: "Poppins-Bold",
+              fontSize: 18,
+              letterSpacing: 1.0));
+
+    } else if (_loadingVisible == true) {
+      return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.black26),
+      );
+    } else {
+      return Icon(Icons.check, color: Colors.white);
+    }
+  }
+
+
+
 }
